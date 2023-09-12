@@ -1,1 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Audio Player</title>
+  <style>
+    .audio-player {
+      display: flex;
+      align-items: center;
+      background-color: black;
+      color: white;
+      font-family: 'IBM Plex Sans', Arial, sans-serif;
+      padding: 10px;
+      width: 400px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+    }
+    
+    .audio-player .play-pause-button {
+      background-color: transparent;
+      color: white;
+      border: none;
+      padding: 0;
+      margin-right: 10px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+    
+    .audio-player .play-pause-button:hover {
+      color: #FFBE3D;
+    }
+    
+    .audio-player .time {
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    
+    .audio-player .timeline {
+      flex-grow: 1;
+      height: 4px;
+      background-color: gray;
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .audio-player .progress-bar {
+      height: 100%;
+      background-color: #FFBE3D;
+      width: 0;
+      position: absolute;
+    }
+  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&display=swap">
+</head>
+<body>
+  <div class="audio-player">
+    <button class="play-pause-button" id="playPauseButton">&#9658;</button>
+    <div class="time" id="playTime">00:00 / 00:00</div>
+    <div class="timeline" id="timeline">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <script>
+    const audio = new Audio('https://www.dropbox.com/scl/fi/jxseas98n7erq7ndmp5ve/IT0401.mp3?rlkey=i79n43tgfew1p6qgqrf4th3us&raw=1');
+    const playPauseButton = document.getElementById('playPauseButton');
+    const playTimeElement = document.getElementById('playTime');
+    const timeline = document.getElementById('timeline');
+    const progressBar = document.getElementById('progressBar');
+    let isPlaying = false;
+
+    playPauseButton.addEventListener('click', function() {
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        playPauseButton.innerHTML = '&#9658;'; // Play symbol
+      } else {
+        audio.play();
+        isPlaying = true;
+        playPauseButton.innerHTML = '&#10074;&#10074;'; // Pause symbol
+      }
+    });
+
+    timeline.addEventListener('click', function(event) {
+      const timelineWidth = timeline.offsetWidth;
+      const clickedPosition = event.clientX - timeline.getBoundingClientRect().left;
+      const percentage = clickedPosition / timelineWidth;
+      const newTime = audio.duration * percentage;
+      audio.currentTime = newTime;
+    });
+
+    audio.addEventListener('timeupdate', function() {
+      const currentTime = formatTime(audio.currentTime);
+      const duration = formatTime(audio.duration);
+      playTimeElement.textContent = currentTime + ' / ' + duration;
+      const progressPercentage = (audio.currentTime / audio.duration) * 100;
+      progressBar.style.width = progressPercentage + '%';
+    });
+
+    function formatTime(time) {
+      const minutes = Math.floor(time / 60);
+      const seconds = Math.floor(time % 60);
+      const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      return formattedTime;
+    }
+  </script>
+</body>
+</html>
 
